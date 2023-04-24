@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Eko Camp</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js" integrity="sha512-6PM0qYu5KExuNcKt5bURAoT6KCThUmHRewN3zUFNaoI6Di7XJPTMoT6K0nsagZKk2OB4L7E3q1uQKHNHd4stIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  
+
+  <style>
+	  .divled{
+		width:20px;
+		height: 20px;
+		border : 1px solid darkgray;
+		border-radius: 50%;  
+	  }
+	  .divred{background-color: red;}
+	  .divgreen{background-color: green;}
+	  .jumbotron {
+		  height:200px;
+		  width:80%;
+		  background: url("/ekocamp.png") no-repeat center center; 
+		  -webkit-background-size: auto 100%;
+		  -moz-background-size: auto 100%;
+		  -o-background-size: auto 100%;
+		  background-size: auto 100%;
+		}
+
+  </style>
+</head>
+<body>
+
+<div class="jumbotron text-center"></div>
+  
+<div class="container">
+  
+  
+  
+  <div class="row">
+	  
+	 <div class="col-md-12" style="margin-bottom:1rem;">
+		   <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalPartie">Reprendre partie</button>
+		   <button type="button" class="btn btn-info newbt" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">Nouvelle partie</button>
+	 </div>	 
+	 
+	   
+	<div class="col-md-12">
+		<div class="container2">
+			<table style="font-size: 0.8rem;font-family: sans-serif;" data-toggle="table"
+					class="table table-condensed table-striped"
+					data-url="/getDeviceData"
+					id= "mtable"
+					data-page-list="[100, 200, 500, 1000]">
+					
+					<thead>
+						<tr>
+							<th data-field="_id"      class="d-none" >_id</th>
+							<th data-field="score1"      class="d-none" >score1</th>
+							<th data-field="score2"      class="d-none" >score2</th>
+							<th data-field="joueur1" data-valign="middle" data-formatter="genericFm">Pseudo joueur 1</th>
+							<th data-field="joueur2" data-valign="middle" data-formatter="genericFm">Pseudo joueur 2</th>
+							<th data-field="date" data-valign="middle" data-formatter="dateFm">Date</th>
+							<th data-field="nbcase" data-valign="middle">Nb cases</th>
+							<th data-width="100px" data-field="_id" data-valign="middle" data-formatter="delFm">Act</th>	
+						</tr>
+					</thead>
+			
+			</table>
+		</div>
+	</div>
+
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade " id="modalPartie" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl" style="max-width: 1210px;" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h5 class="modal-title" id="exampleModalCenterTitle">Partie en attente</h5>
+		</div>
+		  
+		<div class="modal-body">
+			<iframe name="ifrm" id="ifrm" src="" frameborder="0" width="1158" height="800">
+			Your browser doesn't support iframes.</iframe>
+		</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+	<div class="modal-content">
+	
+	  <form action="/posttask" method="POST" id="myform"> 
+	  <input type="hidden" name="nbcase" value="12">
+	  <input type="hidden" name="score1" value="0">
+	  <input type="hidden" name="score2" value="0">
+	  <div class="modal-header">
+		<h5 class="modal-title" id="exampleModalCenterTitle">Ajouter une partie</h5>
+	  </div>
+	  
+	  <div class="modal-body">
+		 <input type="text" class="d-none" name="_id" id="_id">
+		 <div class="form-group">
+		  <label for="prenom">Entrez votre pseudo</label>
+		  <input type="text" class="form-control" placeholder="Pseudo" name="joueur1" id="joueur1" required>
+		</div>
+	  </div>	
+	
+	  <div class="modal-footer">
+		<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+		<button type="submit" class="btn btn-primary" >Envoyer</button>
+	  </div>
+
+	  </form>
+	  
+	</div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+	<div class="modal-content">
+	
+	  <form action="/posttask" method="POST" id="myformj"> 
+	  <div class="modal-header">
+		<h5 class="modal-title" id="exampleModalCenterTitle">Rejoindre une partie</h5>
+	  </div>
+	  
+	  <div class="modal-body">
+		 <input type="text" class="d-none" name="_id" id="_idj2">
+		 <div class="form-group">
+		  <label for="prenom">Entrez votre pseudo</label>
+		  <input type="text" class="form-control" placeholder="Pseudo" name="joueur2" id="joueur2" required>
+		</div>
+	  </div>	
+	
+	  <div class="modal-footer">
+		<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+		<button type="submit" class="btn btn-primary" >Envoyer</button>
+	  </div>
+
+	  </form>
+	  
+	</div>
+  </div>
+</div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.16.0/locale/bootstrap-table-fr-FR.min.js"></script>
+<script src="main.js"></script>
+
+
+<script>
+	setInterval(function(){
+		$.ajax({
+		  url:'/getDeviceData',
+		  type:'get',
+		  success:function(res){
+			$("#mtable").bootstrapTable('load', res);
+		  }
+		});
+	},2000);
+</script>
+
+
+  
+</body>
+</html>

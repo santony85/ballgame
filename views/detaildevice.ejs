@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Eko Camp</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js" integrity="sha512-6PM0qYu5KExuNcKt5bURAoT6KCThUmHRewN3zUFNaoI6Di7XJPTMoT6K0nsagZKk2OB4L7E3q1uQKHNHd4stIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  
+
+  <script src="/app.js"></script>
+  
+
+  <style>
+	  .divled{
+		width:20px;
+		height: 20px;
+		border : 1px solid darkgray;
+		border-radius: 50%;  
+	  }
+	  .divred{background-color: red;}
+	  .divgreen{background-color: green;}
+	  .jumbotron {
+		  background: url("/ekocamp.png") no-repeat center center; 
+		  -webkit-background-size: auto 100%;
+		  -moz-background-size: auto 100%;
+		  -o-background-size: auto 100%;
+		  background-size: auto 100%;
+		}
+
+  </style>
+</head>
+<body>
+
+<div class="jumbotron text-center"></div>
+  
+<div class="container">
+  
+  
+  
+  <div class="row">
+	  
+	 <div class="col-md-12" style="margin-bottom:1rem;">
+		   <a href="/"><button>Accueil</button></a>
+		   <a href="/graphdevice/<%=deviceid%>"><button>Graphique</button></a>
+		   <input type="text" name="datefilter" value="" style="	width: 300px;"/>
+	 </div>	 
+	 
+	   
+	<div class="col-md-12">
+		<div class="container2">
+			<table style="font-size: 0.8rem;font-family: sans-serif;" data-toggle="table"
+					class="table table-condensed table-striped"
+					data-url="/getDeviceData/<%=deviceid%>"
+					id= "mtable"
+					data-page-list="[100, 200, 500, 1000]">
+					
+					<thead>
+						<tr>
+			  			
+			
+										<th data-field="_id"      class="d-none" >_id</th>
+										<th data-field="comstate" data-valign="middle" data-formatter="stateFm">Etat</th>
+										<th data-field="lqi" data-valign="middle" data-formatter="signalFm">Signal</th>
+										<th data-field="seqnum" data-valign="middle">Seq. num</th>
+										<th data-field="data" data-valign="middle" data-formatter="idFm">Id</th>
+			
+										<th data-field="date" data-valign="middle" data-formatter="dateFm">Last event</th>
+										<th data-field="volt" data-valign="middle" data-formatter="voltFm">Volt</th>
+										<th data-field="temperature" data-valign="middle" data-formatter="tempFm">Temp.</th>
+										
+										<th data-field="poids" data-valign="middle" data-formatter="poidsFm">Poids</th>
+										<th data-field="poids" data-valign="middle" >Ratio</th>
+										
+						</tr>
+					</thead>
+			
+			</table>
+		</div>
+	</div>
+
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.16.0/locale/bootstrap-table-fr-FR.min.js"></script>
+
+
+  
+</body>
+</html>

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Bootstrap 4 Example</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="full-screen" content="yes" />
+	<meta name="screen-orientation" content="LANDSCAPE" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="/css/style.css">
+	<script src="/socket.io/socket.io.js"></script>
+</head>
+
+
+			<% if(type=='N'){ %>
+socket.emit('init', '<%= idpartie %>');
+<%} else { %>
+socket.emit('join', '<%= idpartie %>');
+<%}%>
+
+<body>
+    
+	<div class="container">
+		<table class="maintable">
+			<tr>
+				<td>
+					<div id="j1">
+						<div class="middle">
+							<center>
+							<div class="photo">
+								<div class="photoframe">
+								</div>
+							</div>
+					
+							<div class="name">
+								<center>
+								<h1 class="namejoueur">Joueur 1</h1>
+								</center>
+							</div>
+							<p>
+							  <img class="hiddenXX" id="progj0" src="../assets/l0.png" width="180" height="50">
+							</p>
+							<div class="score" id="scorej1">0</div>
+							</center>
+						</div>
+				</div>
+			</td>
+				<td><div class="plateau" id="plateau"></div></td>
+				<td><div id="j2">
+					<div class="middle">
+						<center>
+						<div class="photo">
+							<div class="photoframe">
+							</div>
+						</div>
+				
+						<div class="name">
+							<center>
+							<h1 class="namejoueur">Joueur 2</h1>
+							</center>
+						</div>
+						<p>
+							<img class="hiddenXX" id="progj1" src="../assets/l0.png" width="180" height="50">
+						  </p>
+						<div class="score" id="scorej2">0</div>
+						</center>
+					</div>
+				</div></td>
+			</tr>
+		</table>
+	</div>
+	<script>
+		
+		
+		var socket = io();
+		
+		
+		var lstColor = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', 'none'];
+		var rects = [];
+		var pointTemp = [0, 0];
+		var numjoueur = 0;
+
+		var elem;
+		var ctx;
+		var plateausize = 12;
+		var timeoutval = 10;
+		var coupsmax = 10;
+
+
+		var plateauw = 600;
+		var sizecase;
+		var plateau = new Array(plateausize);
+		for (i = 0; i < plateausize; i++) plateau[i] = new Array(plateausize);
+		var isStart = false;
+		var tmout;
+		var nbtimeoutsec = 0;
+		var coups = 1;
+
+		var pile=[];
+		var score=0;
+		var clickEnable=true;
+
+		var scoreJoueur=[0,0];
+		
+		var <%= idpartie %> = io.connect('<%= idpartie %>');
+
+		window.onload = function () {
+			//plateauw = window.innerWidth - 10;
+			sizecase = Math.floor(plateauw / plateausize);
+			//createPlateau();
+		}
+		
+		$(document).ready(function () {
+			socket.emit('start', '<%= idpartie %>');
+		})
+
+		function createPlateau() {
+			for (var i = 0; i < plateausize; i++) {
+				for (var j = 0; j < plateausize; j++) {
+					var vtp = Math.floor(Math.random() * 4);
+					plateau[i][j] = vtp;
+				}
+			}
+			affPlateau(-1, -1);
+			startTimer();
+
+		}
+
+		function startTimer(){
+			tmout = setInterval(function(){
+				console.log(numjoueur)
+				
+				if(nbtimeoutsec > 9){
+				   nbtimeoutsec = 0;
+				   stopTimer();
+				   //change image
+				   var image = document.getElementById("progj" + numjoueur);
+				   image.src = "../assets/l" + nbtimeoutsec + ".png"
+				   //change joueur
+				   if(numjoueur==0)numjoueur=1;
+				   else numjoueur=0;
+				   
+				   startTimer();
+
+				}
+				else {
+					nbtimeoutsec++;
+					//change image
+					var image = document.getElementById("progj" + numjoueur);
+					image.src = "../assets/l" + nbtimeoutsec + ".png"
+				}
+				
+				
+			}, 1000);
+		}
+
+		function stopTimer(){
+			clearInterval(tmout);
+			nbtimeoutsec=0;
+		}
+
+		function affPlateau(X, Y) {
+			var sceneRoot = document.getElementById('plateau');
+			sceneRoot.innerHTML = "";
+			var size = Math.floor(plateauw / plateausize);
+			var table = document.createElement('table');
+			table.className = "gamegrid";
+			table.id = "mytable";
+			//
+			for (var i = 0; i < plateausize; i++) {
+				var rowEl = document.createElement('tr');
+				for (var j = 0; j < plateausize; j++) {
+					var vtp = plateau[i][j];
+					//console.log(vtp);
+					var cellEl = document.createElement('td');
+					cellEl.width = size;
+					cellEl.height = size;
+					cellEl.align = "center";
+					if (vtp !== 4) {
+						var img = document.createElement('img');
+						img.src = '../assets/' + vtp + '.png';
+						img.height = size;
+						img.width = size;
+						img._row = j;
+						img._column = i;
+						img._color = vtp;
+						cellEl.appendChild(img);
+						img.onclick = function (event) {
+							this.onCellClick(event);
+						}.bind(this);
+					}
+					if (X == j && Y == i) {
+						var nba = 0;
+						var msize = Math.floor(size / 10);
+						var img = document.createElement('img');
+						img.height = size;
+						img.width = size;
+						cellEl.appendChild(img);
+						var interval = setInterval(function () {
+							var img = document.createElement('img');
+							img.src = '../assets/4.png';
+							img.height = size - (msize * nba);
+							img.width = size - (msize * nba);
+							table.rows[Y].cells[X].innerHTML = "";
+							nba++;
+							if (nba == 10) {
+								clearInterval(interval);
+								//callback(env);
+							}
+						}, 5)
+					}
+					rowEl.appendChild(cellEl);
+				}
+				table.appendChild(rowEl);
+			}
+			sceneRoot.appendChild(table);
+		}
+
+		this.onCellClick = function (event) {
+		  if(clickEnable){
+			pile=[];
+			clickEnable=false;
+			score=0;
+			var sourceElmt = event.srcElement;
+			var cell = null;
+			if (sourceElmt.tagName === 'IMG') {
+				cell = sourceElmt.parentNode;
+			} else {
+				cell = sourceElmt;
+			}
+			var tmpcol = sourceElmt._color;
+			
+
+			var env = this;
+			this.AiGame(
+				sourceElmt._row,
+				sourceElmt._column,
+				tmpcol,
+				this,function(ret){
+					//publish io
+					stopTimer();
+					startTimer();
+				})
+			
+			}
+		}
+
+		//get Color Cell
+		this.getCell= function (X,Y){
+			return plateau[Y][X];
+		} 
+		//get valid X Y
+		this.getValidXY= function (X,Y){
+			return X>=0 && Y>=0 && X < plateausize && Y < plateausize;
+		} 
+		//check equal color from original to next
+		this.checkCell = function (X, Y, COL){
+			var colorActuel = COL;
+			var cellColor = this.getCell(X,Y)
+			return colorActuel == cellColor;
+		}
+		this.checkRight = function (X, Y, COL){
+			var colorActuel = COL;
+			if(this.getValidXY(X+1,Y)){
+				var cellColor = this.getCell(X+1,Y)
+				return colorActuel == cellColor;
+			}
+			else return false;
+		}
+		this.checkLeft = function (X, Y, COL){
+			var colorActuel = COL;
+			if(this.getValidXY(X-1,Y)){
+				var cellColor = this.getCell(X-1,Y)
+				return colorActuel == cellColor;
+			}
+			else return false;
+		}
+		this.checkTop = function (X, Y, COL){
+			var colorActuel = COL;
+			if(this.getValidXY(X,Y-1)){
+				var cellColor = this.getCell(X,Y-1)
+				return colorActuel == cellColor;
+			}
+			else return false;
+		}
+		this.checkBottom = function (X, Y, COL){
+			var colorActuel = COL;
+			if(this.getValidXY(X,Y+1)){
+				var cellColor = this.getCell(X,Y+1)
+				return colorActuel == cellColor;
+			}
+			else return false;
+		}
+		this.AiGame = function (X, Y, COL, env, callback) {
+
+			var isRight=false;
+			var isTop=false;
+			var isLeft=false;
+			var isBottom=false;
+
+			if(env.checkCell(X,Y,COL)){
+				plateau[Y][X] = 4;
+				env.affPlateau(X , Y, env, function (env) {});
+				score++;
+			  }
+
+			//check right
+			if(env.checkRight(X,Y,COL)){
+				//console.log("right")  
+				isRight=true;
+			}
+			if(env.checkTop(X,Y,COL)){
+				//console.log("top")  
+				isTop=true;
+				var obj={X:X,Y:Y-1}
+				pile.push(obj)
+			}
+			if(env.checkLeft(X,Y,COL)){
+				//console.log("left")  
+				isLeft=true;
+				var obj={X:X-1,Y:Y}
+				pile.push(obj)
+			}
+			if(env.checkBottom(X,Y,COL)){
+				//console.log("bottom")  
+				isBottom=true;
+				var obj={X:X,Y:Y+1}
+				pile.push(obj)
+			}
+
+			if(isRight){
+				env.AiGame(X+1, Y, COL, env,callback);  
+			}
+			else {
+				var melm = pile.pop();
+				if(melm)env.AiGame(melm.X, melm.Y, COL, env,callback); 
+				else {
+					scoreJoueur[numjoueur]=scoreJoueur[numjoueur]+score;
+					var sj1 = document.getElementById('scorej1');
+					var sj2 = document.getElementById('scorej2');
+					sj1.innerHTML=scoreJoueur[0];
+					sj2.innerHTML=scoreJoueur[1];
+					clickEnable=true;
+					if(numjoueur==0)numjoueur=1;
+					else numjoueur=0; 
+					return callback("ok"); 
+				}
+			}
+		}
+
+
+	</script>
+</body>
+
+</html>

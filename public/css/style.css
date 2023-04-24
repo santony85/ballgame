@@ -1,0 +1,199 @@
+@font-face {
+    font-family: njoueur;
+    src: url(../assets/Gasalt-Black.ttf);
+}
+
+@font-face {
+    font-family: number;
+    src: url(../assets/chargen.ttf);
+}
+
+h1 {
+    font-family: njoueur;
+    color: #ff00ff;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+html{
+        width:100%;
+        height: 100%;
+}
+
+
+.preload {
+    height: 0px;
+}
+
+.joueur {
+
+    float: left;
+    width: 50%;
+    height: 100%;
+    color: black !important;
+}
+
+.jtiers {
+
+    float: left;
+    width: 33.33%;
+    height: 100%;
+    color: black !important;
+}
+
+.imgrt {
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+}
+
+.joueurST {
+
+    float: left;
+    width: 50%;
+    height: 5vh;
+    color: black !important;
+}
+
+.top {
+    height: 7vh;
+    width: 100%;
+}
+
+.timer {
+    height: 10vh;
+    width: 100%;
+}
+
+.whoplayer {
+    height: 5vh;
+    width: 100%;
+}
+
+.bottom {
+    height: 10vh;
+    width: 100%;
+}
+
+.middle {
+    height: 600px;
+    /*width: 1152px;*/
+}
+
+.name {
+    width: 266px;
+    height: 72px;
+    background-image: url('../assets/name.png');
+    background-position: center;
+    /* Center the image */
+    background-repeat: no-repeat;
+    /* Do not repeat the image */
+    background-size: cover;
+}
+
+.photo {
+    width: 266px;
+    height: 160px;
+    background-image: url('../assets/frame.png');
+    background-position: center;
+    /* Center the image */
+    background-repeat: no-repeat;
+    /* Do not repeat the image */
+    background-size: contain;
+}
+
+.photoframe {
+    width: 266px;
+    height: 160px;
+    background-image: url('../assets/frame.png');
+    background-position: center;
+    /* Center the image */
+    background-repeat: no-repeat;
+    /* Do not repeat the image */
+    background-size: contain;
+}
+
+.namejoueur {
+    padding-top: 12px;
+}
+
+.score {
+    font-family: number;
+    position: relative;
+    font-size: 80px;
+}
+
+#scene {
+    width: 100%;
+    height: 100%;
+    overflow-x: auto;
+    margin: 0;
+}
+
+table {
+    border-spacing: 0px !important;
+}
+
+.container{
+    width: 1158px;
+    height: 800px; 
+    margin: auto;
+    background-color: white;
+    background-image: url("../assets/bk.png");
+    background-position: center;
+    /* Center the image */
+    background-repeat: no-repeat;
+    /* Do not repeat the image */
+    background-size: initial;
+}
+
+table.gamegrid {
+    /*width: 100%;
+    height: 100%;*/
+        width: 600px;
+        height: 600px;
+    align-self: center;
+    table-layout: fixed;
+    margin: auto;
+    border-spacing: 0px;
+    margin-top: 5%;
+}
+
+.winoverlay {
+    position: absolute;
+    height: 90%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 0, 0, 0.6);
+    z-index: 999;
+    visibility: hidden;
+}
+
+.winoverlay2 {
+    position: absolute;
+    height: 5%;
+    width: 100%;
+    top: 0;
+    left: 0;
+
+    z-index: 1999;
+
+}
+
+
+.info {
+    z-index: 2000;
+}
+
+.waitbox {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1999;
+    background-color: rgba(0,0,0,0.4);
+
+}
