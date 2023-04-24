@@ -146,6 +146,7 @@ table {
     background-repeat: no-repeat;
     /* Do not repeat the image */
     background-size: initial;
+    overflow: hidden;
 }
 
 table.gamegrid {
@@ -196,4 +197,9 @@ table.gamegrid {
     z-index: 1999;
     background-color: rgba(0,0,0,0.4);
 
+}
+
+.jplay {
+    position: relative;
+    top: 70px;
 }

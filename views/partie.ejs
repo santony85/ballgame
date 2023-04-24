@@ -24,12 +24,13 @@
 							<center>
 							<div class="photo">
 								<div class="photoframe">
+									<div class="jplay" id="jt0">O</div>
 								</div>
 							</div>
 					
 							<div class="name">
 								<center>
-								<h1 class="namejoueur">Joueur 1</h1>
+								<h1 class="namejoueur" id="namejoueur1">Joueur 1</h1>
 								</center>
 							</div>
 							<p>
@@ -46,12 +47,13 @@
 						<center>
 						<div class="photo">
 							<div class="photoframe">
+								<div class="jplay" id="jt1">O</div>
 							</div>
 						</div>
 				
 						<div class="name">
 							<center>
-							<h1 class="namejoueur">Joueur 2</h1>
+							<h1 class="namejoueur" id="namejoueur2">Joueur 2</h1>
 							</center>
 						</div>
 						<p>
@@ -69,26 +71,40 @@
 			   <div><h1 style="font-size: 7rem;">De joueur 2</h1></div>
 			</center>
 		</div>
+		<div class="waitbox" id="winbox">
+			<center>
+			   <div><h1 style="font-size: 7rem;">THE WINNER IS !!!!</h1></div>
+			   <div><h1 style="font-size: 7rem;" id="winname">JOUEUR 1</h1></div>
+			</center>
+		</div>
 	</div>
 	<script>
 		
 		
 		var socket = io();
+		var numjoueur = 0;
+		var joueur = 0;
+		var clickEnable=false;
+		var scoreJoueur=[0,0];
+		var coupsmax = 10;
+		var nbcoups=0;
+		
+		
 		
 		
 		var lstColor = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', 'none'];
 		var rects = [];
 		var pointTemp = [0, 0];
-		var numjoueur = 0;
+		
 
 		var elem;
 		var ctx;
 		var plateausize = 12;
 		var timeoutval = 10;
-		var coupsmax = 10;
+		
 
 
-		var plateauw = 600;
+		var plateauw = 590;
 		var sizecase;
 		var plateau = new Array(plateausize);
 		for (i = 0; i < plateausize; i++) plateau[i] = new Array(plateausize);
@@ -99,7 +115,7 @@
 
 		var pile=[];
 		var score=0;
-		var clickEnable=true;
+		var clickEnable=false;
 
 		var scoreJoueur=[0,0];
 		
@@ -108,26 +124,91 @@
 		window.onload = function () {
 			//plateauw = window.innerWidth - 10;
 			sizecase = Math.floor(plateauw / plateausize);
+			//document.addEventListener('contextmenu', event => event.preventDefault());
 			//createPlateau();
 		}
 		
 		$(document).ready(function () {
+			$('#winbox').css('visibility', 'hidden');
 			<% if(type=='N'){ %>
 			socket.emit('init', '<%= idpartie %>');
+		    joueur = 0;
+			clickEnable=true;
 			<%} else { %>
 			socket.emit('join', '<%= idpartie %>');
+			joueur = 1;
 			<%}%>
 		})
 		
 		
+		var zzz = 0;		  
+		socket.on('affgridg', function(msg) {
+			//var sj1 = document.getElementById('jt0');
+			//sj1.innerHTML=zzz++;
+			plateau = msg.plateau;
+			numjoueur = msg.numjoueur;
+			scoreJoueur[0]=msg.sj0;
+			scoreJoueur[1]=msg.sj1;
+			if(numjoueur==joueur)clickEnable=true;
+			else clickEnable=false;
+			affPlateau(msg.X,msg.Y);
+			affScore(msg.sj0,msg.sj1);
+		  });
+		
+	    socket.on('startpartie', function(msg) {
+			var sj1 = document.getElementById('namejoueur1');
+			var sj2 = document.getElementById('namejoueur2');
+			sj1.innerHTML=msg.joueur1;
+			sj2.innerHTML=msg.joueur2;	
+ 	   	    $('#waitbox').css('visibility', 'hidden');
+			if(joueur==0)startTimer();
+		  });
+		  
+		socket.on('starttimerg', function(msg) {
+			stopTimer();
+			nbcoups=msg.nbcoups;
+			console.log(nbcoups)
+			numjoueur = msg.numjoueur;
+			plateau = msg.plateau;
+			var image = document.getElementById("progj0" );
+			image.src = "/assets/l0.png"
+			image = document.getElementById("progj1" );
+			image.src = "/assets/l0.png"
+			if(joueur==0)startTimer();
+		  });
+		  
+		  
+		socket.on('afftimerg', function(msg) {
+			//console.log("msg")
+			var image = document.getElementById("progj" + msg.numjoueur);
+			image.src = "/assets/l" + msg.nbtimeoutsec + ".png"
+			//
+			plateau = msg.plateau;
+			if(numjoueur==joueur)clickEnable=true;
+			else clickEnable=false;
+			
+		  });  
+		  
 		socket.on('affplateau', function(msg) {
 			plateau = msg.plateau;
 			affPlateau(-1, -1);
 		  });
 		
-	    socket.on('startpartie', function(msg) {
- 	   	    $('#waitbox').css('visibility', 'hidden');
+		socket.on('stopgame', function(msg) {
+			stopTimer();
+			clickEnable=false;
+			var sj1 = document.getElementById('winname');
+			sj1.innerHTML=msg;
+			$('#winbox').css('visibility', 'initial');
 		  });
+		  
+		  
+		function affScore(j0,j1){
+		   var sj1 = document.getElementById('scorej1');
+		   var sj2 = document.getElementById('scorej2');
+		   sj1.innerHTML=j0;
+		   sj2.innerHTML=j1;	
+		}  
 
 		function startTimer(){
 			tmout = setInterval(function(){
@@ -136,21 +217,22 @@
 				if(nbtimeoutsec > 9){
 				   nbtimeoutsec = 0;
 				   stopTimer();
-				   //change image
-				   var image = document.getElementById("progj" + numjoueur);
-				   image.src = "/assets/l" + nbtimeoutsec + ".png"
+
+				   //var image = document.getElementById("progj" + numjoueur);
+				   //image.src = "/assets/l" + nbtimeoutsec + ".png"
+				   var data={id:'<%= idpartie %>',numjoueur:numjoueur,nbtimeoutsec:nbtimeoutsec,plateau:plateau};
+				   socket.emit('afftimer', data);
 				   //change joueur
 				   if(numjoueur==0)numjoueur=1;
 				   else numjoueur=0;
-				   
-				   startTimer();
+				   var data={id:'<%= idpartie %>',numjoueur:numjoueur,plateau:plateau,nbcoups:nbcoups,sj0:scoreJoueur[0],sj1:scoreJoueur[1]};
+				   socket.emit('stoptimer', data);
 
 				}
 				else {
 					nbtimeoutsec++;
-					//change image
-					var image = document.getElementById("progj" + numjoueur);
-					image.src = "/assets/l" + nbtimeoutsec + ".png"
+					var data={id:'<%= idpartie %>',numjoueur:numjoueur,nbtimeoutsec:nbtimeoutsec,plateau:plateau};
+					socket.emit('afftimer', data);	
 				}
 				
 				
@@ -161,7 +243,8 @@
 			clearInterval(tmout);
 			nbtimeoutsec=0;
 		}
-
+		
+		//ok -a revoir
 		function affPlateau(X, Y) {
 			var sceneRoot = document.getElementById('plateau');
 			sceneRoot.innerHTML = "";
@@ -188,9 +271,11 @@
 						img._column = i;
 						img._color = vtp;
 						cellEl.appendChild(img);
-						img.onclick = function (event) {
-							this.onCellClick(event);
-						}.bind(this);
+						//if(numjoueur == joueur){
+						  img.onclick = function (event) {
+							  this.onCellClick(event);
+						  }.bind(this);
+						//}	
 					}
 					if (X == j && Y == i) {
 						var nba = 0;
@@ -218,6 +303,7 @@
 			}
 			sceneRoot.appendChild(table);
 		}
+		
 
 		this.onCellClick = function (event) {
 		  if(clickEnable){
@@ -238,9 +324,9 @@
 				sourceElmt._column,
 				tmpcol,
 				this,function(ret){
-					//publish io
 					stopTimer();
-					startTimer();
+					var data={id:'<%= idpartie %>',numjoueur:numjoueur,plateau:plateau,nbcoups:nbcoups,sj0:scoreJoueur[0],sj1:scoreJoueur[1]};
+					socket.emit('stoptimer', data);
 				})
 			
 			}
@@ -302,7 +388,10 @@
 
 			if(env.checkCell(X,Y,COL)){
 				plateau[Y][X] = 4;
-				env.affPlateau(X , Y, env, function (env) {});
+				//env.affPlateau(X , Y, env, function (env) {});
+				affPlateau(X , Y);
+				//var data={id:'<%= idpartie %>',plateau:plateau,X:X,Y:Y,numjoueur:numjoueur};
+				//socket.emit('affplateau', data);
 				score++;
 			  }
 
@@ -337,14 +426,12 @@
 				var melm = pile.pop();
 				if(melm)env.AiGame(melm.X, melm.Y, COL, env,callback); 
 				else {
-					scoreJoueur[numjoueur]=scoreJoueur[numjoueur]+score;
-					var sj1 = document.getElementById('scorej1');
-					var sj2 = document.getElementById('scorej2');
-					sj1.innerHTML=scoreJoueur[0];
-					sj2.innerHTML=scoreJoueur[1];
-					clickEnable=true;
+					scoreJoueur[joueur]=scoreJoueur[joueur]+score;
+					clickEnable=false;
 					if(numjoueur==0)numjoueur=1;
 					else numjoueur=0; 
+					var data={id:'<%= idpartie %>',plateau:plateau,X:X,Y:Y,numjoueur:numjoueur,sj0:scoreJoueur[0],sj1:scoreJoueur[1],nbcoups:nbcoups};
+					socket.emit('affgrid', data);
 					return callback("ok"); 
 				}
 			}

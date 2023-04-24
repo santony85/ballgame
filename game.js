@@ -5,6 +5,7 @@ const http = require('http');
 const path = require('path');
 const fs = require('fs');
 var moment = require('moment');
+const Aigame = require('./utils/aigame')
 
 
 app.set('views', path.join(__dirname, 'views'));
@@ -29,9 +30,11 @@ MongoClient.connect(MONGO_URL, { useUnifiedTopology: true },function(err, db) {
  });
 
 var httpServer = http.createServer(app);
-var io = require( "socket.io" )( httpServer );
+var io = require( "socket.io" )( httpServer , { /*wsEngine: require("eiows").Server*/ });
 
 console.log("Server connected! port 8000");	
+
+var s = new Aigame(); 
 
 
 
@@ -53,8 +56,41 @@ io.on('connection', (socket) => {
 	  socket.join(data);
 	  dbo.collection('parties').findOne({_id : ObjectID(data)},function(err, item) {
 		  item.plateau = item.plateauInitial;
+		  item.numjoueur=0;
 		  io.to(data).emit("affplateau",item);
+		  io.to(data).emit("startpartie",item);
 		});
+	});
+	
+	socket.on('affgrid', (data) => {
+		//console.log(data)
+		var item={plateau:data.plateau,X:data.X,Y:data.Y,numjoueur:data.numjoueur,sj0:data.sj0,sj1:data.sj1}
+		io.to(data.id).emit("affgridg",item);
+	});
+	
+	socket.on('afftimer', (data) => {
+		//console.log(data)
+		var item={numjoueur:data.numjoueur,nbtimeoutsec:data.nbtimeoutsec,plateau:data.plateau}
+		io.to(data.id).emit("afftimerg",item);
+	});
+	
+	socket.on('stoptimer', (data) => {
+		
+		var nb = data.nbcoups+1;
+		var item={numjoueur:data.numjoueur,plateau:data.plateau,nbcoups:nb};
+		if(nb<8)io.to(data.id).emit("starttimerg",item);
+		else {
+			dbo.collection('parties').findOne({_id : ObjectID(data)},function(err, item) {
+			  console.log(data.sj0,data.sj1);
+			  var winname="";
+			  if(data.sj0 > data.sj1)winname=item.joueur1;
+			  else if(data.sj0 == data.sj1)winname=item.joueur1+"&"+item.joueur2;
+			  else winname=item.joueur2;
+			  console.log(winname);
+			  io.to(data.id).emit("stopgame",winname);	
+			})
+			
+		}
 	});
 	//change player + score
 	//
@@ -115,6 +151,9 @@ app.get('/getDeviceData', async (req, res)=> {
 		  myobj.date = new Date();
 		  myobj.plateau = createPlateau(12);
 		  myobj.plateauInitial =  myobj.plateau;
+		  
+		  //myobj.aigame = new Aigame(myobj.plateau);
+		  
 		  //console.log(myobj)
 		  if (myobj['_id'] !== "") {
 			myobj['_id'] = new ObjectID(myobj['_id']);

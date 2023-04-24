@@ -15,5 +15,9 @@
     "moment": "^2.29.3",
     "mongodb": "^4.15.0",
     "socket.io": "^4.6.1"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.7",
+    "utf-8-validate": "^6.0.3"
   }
 }
